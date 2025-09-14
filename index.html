@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>책임있는 AI 활용 훈련소</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .problem-span {
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 4px;
+        }
+        .problem-span:hover {
+            background-color: #fef9c3; /* yellow-100 */
+        }
+        .problem-span.selected {
+            background-color: #fde047; /* yellow-400 */
+            font-weight: 700;
+        }
+
+        /* 피드백 스타일 */
+        .feedback-correct { background-color: #dcfce7; } /* green-100 */
+        .feedback-incorrect { background-color: #fee2e2; } /* red-100 */
+        .feedback-missed { background-color: #ffedd5; font-style: italic; } /* orange-100 */
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div id="app" class="container mx-auto p-4 md:p-8 max-w-6xl">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-blue-600">책임있는 AI 활용 훈련소 🚀</h1>
+            <p class="mt-2 text-lg text-gray-600">AI가 생성한 글을 비판적으로 검토하고 수정하는 방법을 연습해봅시다.</p>
+        </header>
+
+        <main id="main-content" class="bg-white p-6 rounded-xl shadow-lg">
+            <div id="intro-screen">
+                <h2 class="text-2xl font-semibold mb-2 text-center">훈련 시작하기</h2>
+                <p class="text-center mb-8 text-gray-500">준비된 시나리오를 통해 AI 결과물을 검토하는 연습을 시작해보세요.</p>
+                
+                <div class="flex justify-center mt-6">
+                    <button id="start-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                        훈련 시작
+                    </button>
+                </div>
+            </div>
+
+            <div id="training-screen" class="hidden">
+                <div id="scenario-info" class="mb-6 pb-4 border-b">
+                    <h2 id="scenario-title" class="text-2xl font-bold text-gray-800"></h2>
+                    <p id="scenario-instruction" class="mt-2 text-gray-500"></p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div id="text-panel" class="p-4 border rounded-lg bg-gray-50">
+                        <h3 class="font-semibold text-lg mb-2">🤖 AI 생성 텍스트</h3>
+                        <div id="ai-text-content" class="text-lg leading-relaxed"></div>
+                    </div>
+
+                    <div id="interaction-panel" class="p-4 border rounded-lg bg-gray-50 flex flex-col justify-center items-center">
+                        <div id="interaction-default" class="text-center text-gray-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                            </svg>
+                            <p>글에서 수정이 필요하다고 생각되는 부분을 <strong class="text-blue-500">클릭</strong>해보세요.</p>
+                        </div>
+                        <div id="interaction-content" class="hidden w-full">
+                            <h3 class="font-bold text-lg mb-3 text-center border-b pb-2">🤔 어떻게 판단할까요?</h3>
+                            <div id="criteria-box" class="mb-4 p-3 bg-blue-50 rounded-md"></div>
+                            <div class="flex flex-col space-y-3">
+                                <button id="edit-btn" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg">✏️ 수정하기</button>
+                                <button id="keep-btn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">✅ 유지하기</button>
+                            </div>
+                            <div id="edit-area" class="hidden mt-4">
+                                <textarea id="edit-textarea" class="w-full p-2 border rounded-md" rows="4"></textarea>
+                                <button id="save-edit-btn" class="mt-2 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">수정 내용 저장</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-center">
+                    <button id="submit-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                        제출하고 피드백 받기
+                    </button>
+                </div>
+            </div>
+
+            <div id="feedback-screen" class="hidden">
+                 <h2 class="text-2xl font-bold text-center mb-6">🔍 훈련 결과 피드백</h2>
+                 <div class="p-4 border rounded-lg bg-gray-50 mb-6">
+                      <h3 class="font-semibold text-lg mb-2">📝 나의 수정 결과</h3>
+                      <div id="feedback-text-content" class="text-lg leading-relaxed"></div>
+                 </div>
+                 <div class="p-4 border rounded-lg bg-blue-50">
+                      <h3 class="font-semibold text-lg mb-2">💡 총평 및 해설</h3>
+                      <div id="feedback-summary"></div>
+                 </div>
+                 <div class="mt-8 flex justify-center space-x-4">
+                      <button id="retry-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg">다시 풀어보기</button>
+                      <button id="next-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg">다음 훈련으로</button>
+                 </div>
+            </div>
+        </main>
+
+    </div>
+
+    <script>
+        const scenarios = [
+            {
+                id: 0,
+                title: "시나리오 1: 역사 과제",
+                instruction: "세종대왕에 대한 AI의 설명을 읽고, 사실과 다르거나 부적절한 표현을 찾아 수정해보세요.",
+                fullText: "조선의 4대 왕인 세종대왕은 집현전을 폐지하고 훈민정음을 창제한 위대한 군주입니다. 그는 16세기에 한글을 만들어 백성들이 글을 쉽게 읽고 쓸 수 있도록 했습니다. 또한, 그의 장인인 심온은 한글 창제를 적극적으로 지지했다고 전해집니다. 세종대왕은 1450년에 사망했습니다.",
+                problems: [
+                    {
+                        textToWrap: "집현전을 폐지하고",
+                        problemType: "accuracy",
+                        criteria: "<strong>[사실 확인]</strong> 이 내용이 역사적 사실과 일치하나요? 다른 자료(책, 인터넷, 교과서)에서 다시 찾아본 뒤 수정해보세요.",
+                        explanation: "세종대왕은 오히려 학문 연구 기관인 '집현전'을 크게 발전시킨 왕입니다. '집현전'을 폐지한 것은 명백히 잘못된 정보입니다.",
+                        isCritical: true,
+                    },
+                    {
+                        textToWrap: "16세기에 한글을 만들어",
+                        problemType: "accuracy",
+                        criteria: "<strong>[사실 확인]</strong> 이 내용이 역사적 사실과 일치하나요? 다른 자료(책, 인터넷, 교과서)에서 다시 찾아본 뒤 수정해보세요.",
+                        explanation: "훈민정음은 1443년에 창제되었으므로 15세기입니다. 16세기라고 표현한 것은 명백히 잘못된 정보입니다.",
+                        isCritical: true,
+                    },
+                    {
+                        textToWrap: "그의 장인인 심온은 한글 창제를 적극적으로 지지했다고 전해집니다.",
+                        problemType: "source",
+                        criteria: "<strong>[출처 확인]</strong> 심온은 한글 창제 이전에 이미 사망했습니다. 이 정보가 어디서 왔는지, 누가 말했는지 확인하는 것이 중요합니다.",
+                        explanation: "심온은 1418년에 사망했으며, 훈민정음 창제(1443년)는 그 이후에 이루어졌습니다. 이 정보는 사실이 아니므로 삭제하거나 수정해야 합니다.",
+                        isCritical: true,
+                    },
+                    {
+                        textToWrap: "사망했습니다.",
+                        problemType: "style",
+                        criteria: "<strong>[논리 점검]</strong> 세종대왕의 사망 연도는 맞지만, '사망했습니다'라는 표현이 과제물에 적합한가요? 더 격식 있는 표현을 고민해보세요.",
+                        explanation: "역사적 인물에게 '사망'은 존중을 담은 '승하'가 더 적절합니다. 논리적으로는 맞지만, 글의 성격에 따라 표현을 다듬는 연습입니다.",
+                        isCritical: false,
+                    }
+                ]
+            },
+            {
+                id: 1,
+                title: "시나리오 2: 딥페이크에 대한 글",
+                instruction: "AI가 작성한 딥페이크 기술에 대한 설명을 읽고, 편향되거나 위험할 수 있는 부분을 찾아 수정해보세요.",
+                fullText: "딥페이크는 인공지능을 이용해 영상이나 이미지를 합성하는 기술입니다. 이 기술은 주로 유명인의 얼굴을 합성하여 재미있는 영상을 만드는 데 사용됩니다. 딥페이크 기술 자체는 문제가 없으며, 사용하는 사람에 따라 결과가 달라질 뿐입니다. 누구나 쉽게 만들 수 있어서 새로운 놀이 문화가 되고 있습니다.",
+                 problems: [
+                    {
+                        textToWrap: "주로 유명인의 얼굴을 합성하여 재미있는 영상을 만드는 데 사용됩니다.",
+                        problemType: "bias",
+                        criteria: "<strong>[편향성]</strong> 딥페이크가 '주로 재미'를 위해서만 사용될까요? 긍정적인 측면만 부각하고 있지는 않은지 확인해보세요.",
+                        explanation: "딥페이크는 오락 목적 외에도 영화 제작, 교육 등 긍정적 활용이 있지만, 가짜 뉴스, 명예훼손 등 심각한 범죄에 악용되는 경우가 많습니다. 긍정/부정 측면을 균형있게 서술해야 합니다.",
+                        isCritical: true,
+                    },
+                    {
+                        textToWrap: "딥페이크 기술 자체는 문제가 없으며",
+                        problemType: "oversimplification",
+                        criteria: "<strong>[지나친 단순화]</strong> 기술이 정말 '문제가 없을까요'? 기술에 내재된 윤리적, 사회적 위험성을 간과하고 있지는 않은지 생각해보세요.",
+                        explanation: "기술은 가치 중립적일 수 있지만, 악용 가능성이 매우 높은 기술의 경우 '문제가 없다'고 단정하기 어렵습니다. 기술의 위험성을 함께 언급해야 책임있는 태도입니다.",
+                        isCritical: true,
+                    },
+                    {
+                        textToWrap: "누구나 쉽게 만들 수 있어서",
+                        problemType: "accuracy",
+                        criteria: "<strong>[정확성]</strong> '누구나 쉽게' 만들 수 있다는 표현이 사실일까요? 기술적 장벽을 고려해보세요.",
+                        explanation: "과거에 비해 쉬워진 것은 사실이나, 여전히 고품질의 딥페이크는 전문 지식과 장비가 필요합니다. '누구나'라는 표현은 과장될 수 있으므로 '기술이 발전하며 만들기가 더 쉬워지고 있다' 등으로 수정하는 것이 정확합니다.",
+                        isCritical: false,
+                    }
+                ]
+            },
+            {
+                id: 2,
+                title: "시나리오 3: 팩트 체크 연습 (과학 뉴스)",
+                instruction: "AI가 작성한 과학 기사를 읽고, 사실에 부합하는지, 근거가 명확한지 확인해보세요.",
+                fullText: "최근 발견된 신종 플라스틱 분해 박테리아는 지구의 모든 플라스틱 쓰레기를 단기간에 완전히 분해할 수 있습니다. 이 박테리아는 특별한 조건 없이도 작동하며, 모든 환경에서 활발하게 활동합니다. 과학자들은 이 박테리아를 이용하면 10년 안에 지구의 플라스틱 문제를 완전히 해결할 수 있다고 말합니다.",
+                problems: [
+                    {
+                        textToWrap: "지구의 모든 플라스틱 쓰레기를 단기간에 완전히 분해할 수 있습니다.",
+                        problemType: "accuracy",
+                        criteria: "<strong>[정확성]</strong> '모든', '단기간에', '완전히'와 같은 단정적인 표현이 과학적 사실에 부합하나요? 과장된 표현은 아닌지 생각해보세요.",
+                        explanation: "신종 박테리아의 발견은 의미가 있지만, 실제 자연환경에서 모든 종류의 플라스틱을 분해하는 데는 오랜 시간이 걸리며 한계가 있습니다. '모든'과 같은 극단적인 표현은 사실과 다를 수 있습니다.",
+                        isCritical: true,
+                    },
+                    {
+                        textToWrap: "특별한 조건 없이도 작동하며, 모든 환경에서 활발하게 활동합니다.",
+                        problemType: "accuracy",
+                        criteria: "<strong>[정확성]</strong> 미생물이 모든 환경에서 동일한 활성도를 가질 수 있을까요? 과학적 발견은 항상 특정 조건 하에서 이루어지는 경우가 많다는 것을 고려해보세요.",
+                        explanation: "생물학적 활성은 온도, 습도, 영양분 등 환경적 요인에 크게 영향을 받습니다. '모든 환경'에서 작동한다는 것은 지나친 일반화이므로, '특정 환경에서 효과적인 것으로 나타났습니다'와 같이 구체적으로 수정해야 합니다.",
+                        isCritical: true,
+                    },
+                    {
+                        textToWrap: "과학자들은 이 박테리아를 이용하면 10년 안에 지구의 플라스틱 문제를 완전히 해결할 수 있다고 말합니다.",
+                        problemType: "source",
+                        criteria: "<strong>[출처 명확성 및 과장]</strong> '과학자들'은 누구를 가리키며, '10년 안에'라는 예측은 신뢰할 수 있는가요? 출처가 모호하거나 과장된 부분이 있는지 판단하세요.",
+                        explanation: "과학적 연구는 아직 초기 단계일 수 있으며, '10년 안에'와 같은 구체적이고 낙관적인 예측은 근거가 부족할 수 있습니다. '일부 연구자들은 이러한 가능성을 제시하고 있습니다'와 같이 수정하여 신뢰성을 높여야 합니다.",
+                        isCritical: true,
+                    }
+                ]
+            },
+            {
+                id: 3,
+                title: "시나리오 4: SNS 속 과학 정보",
+                instruction: "SNS에 올라온 글을 읽고, 내용의 신뢰성을 여러 관점에서 분석해 보세요.",
+                fullText: "긴 시간 앉아있으면 집중력이 떨어집니다. 한 전문가에 따르면, 집중력 저하의 유일한 원인은 앉아있는 자세 때문이라고 합니다. 이 전문가가 발표한 연구 결과에 따르면, 10분에 한 번씩 서서 팔을 휘두르는 행동만으로 뇌의 능력을 10배 향상시킬 수 있다고 합니다. 이 글은 최고의 연구 결과를 기반으로 작성되었습니다.",
+                problems: [
+                    {
+                        textToWrap: "집중력 저하의 유일한 원인은 앉아있는 자세 때문이라고 합니다.",
+                        problemType: "oversimplification",
+                        criteria: "<strong>[논리 점검]</strong> 집중력 저하의 원인은 정말 '하나'뿐일까요? 피로, 수면 부족, 환경 등 다른 요인은 없는지 생각해보세요. AI의 주장이 지나치게 단순화되진 않았나요?",
+                        explanation: "집중력 저하의 원인은 매우 다양하며, 한 가지로 단정하는 것은 논리적 오류입니다. '유일한'이라는 표현은 비판적인 시각으로 검토해야 합니다.",
+                        isCritical: true,
+                    },
+                    {
+                        textToWrap: "한 전문가에 따르면",
+                        problemType: "source",
+                        criteria: "<strong>[출처 확인]</strong> '한 전문가'는 누구를 의미할까요? 근거가 되는 연구의 출처(기관, 학회지 등)가 불분명하면 신뢰하기 어렵습니다.",
+                        explanation: "SNS에 흔히 보이는 모호한 출처입니다. '누가, 어디에서' 말했는지 구체적인 정보를 찾아봐야 신뢰할 수 있습니다.",
+                        isCritical: true,
+                    },
+                    {
+                        textToWrap: "10배 향상시킬 수 있다고 합니다.",
+                        problemType: "accuracy",
+                        criteria: "<strong>[사실 확인]</strong> '10배 향상'과 같은 극단적인 수치는 객관적인가요? 검증되지 않은 수치나 과장된 표현은 아닌지 다른 자료(논문, 기사 등)와 비교해 보세요.",
+                        explanation: "'10배'와 같은 수치는 실제 연구에서 나오기 매우 어려운 결과입니다. 과학적 근거가 부족한 과장된 표현이므로 수정이 필요합니다.",
+                        isCritical: true,
+                    }
+                ]
+            },
+            {
+                id: 5,
+                title: "시나리오 5: 교내 정책 제안",
+                instruction: "교내에서 점심시간에 급식 메뉴 투표를 하는 시스템을 도입하는 방안에 대한 AI의 글을 읽고, 현실적인 문제점과 해결책을 고민해보세요.",
+                fullText: "점심시간에 메뉴를 투표로 정하는 시스템을 도입하면 학생들의 급식 만족도가 즉시 100%가 될 것입니다. 학생들은 좋아하는 메뉴를 직접 선택할 수 있어 잔반이 '0'이 되고, 모두가 즐거운 식사를 할 수 있습니다. 이 시스템을 도입하면 급식실의 모든 문제가 해결될 것입니다.",
+                problems: [
+                    {
+                        textToWrap: "학생들의 급식 만족도가 즉시 100%가 될 것입니다.",
+                        problemType: "bias",
+                        criteria: "<strong>[다른 관점 비교]</strong> 모든 학생이 좋아하는 메뉴가 과연 하나로 정해질 수 있을까요? 개인의 취향, 알레르기 등 다양한 관점을 고려해보세요.",
+                        explanation: "100% 만족은 현실적으로 불가능합니다. '만족도가 크게 향상될 것으로 기대된다'와 같이 현실적이고 객관적인 표현으로 수정해야 합니다.",
+                        isCritical: true,
+                    },
+                    {
+                        textToWrap: "잔반이 '0'이 되고",
+                        problemType: "oversimplification",
+                        criteria: "<strong>[스스로 질문]</strong> 정말 잔반이 하나도 남지 않을까요? 식사량 차이, 갑작스러운 변동성 등을 고려했을 때 현실적으로 가능한 일인지 스스로 질문해 보세요.",
+                        explanation: "아무리 선호하는 메뉴라도 남는 경우가 생길 수밖에 없습니다. '잔반량을 크게 줄일 수 있을 것이다'와 같이 현실적인 목표를 제시하는 것이 좋습니다.",
+                        isCritical: true,
+                    },
+                    {
+                        textToWrap: "이 시스템을 도입하면 급식실의 모든 문제가 해결될 것입니다.",
+                        problemType: "evaluation",
+                        criteria: "<strong>[체험 검증]</strong> 시스템 도입에 필요한 기술적, 행정적, 인력적 문제는 없을까요? 투표 시스템 구현, 관리, 비용 등 실질적인 실행 방안을 따져보세요.",
+                        explanation: "투표 시스템을 구현하고 관리하는 데는 기술적, 행정적 비용과 노력이 필요합니다. 또한 '모든 문제'라는 과도한 일반화는 피해야 합니다. 다른 학생들과 토론하여 예상되는 문제점과 해결책을 함께 고민하는 것이 중요합니다.",
+                        isCritical: true,
+                    }
+                ]
+            }
+        ];
+
+        let currentScenarioIndex = 0;
+        let userChoices = {};
+        let selectedSpanId = null;
+
+        // DOM Elements
+        const app = document.getElementById('app');
+        const introScreen = document.getElementById('intro-screen');
+        const trainingScreen = document.getElementById('training-screen');
+        const feedbackScreen = document.getElementById('feedback-screen');
+        const startBtn = document.getElementById('start-btn');
+        
+        function initializeTraining() {
+            introScreen.classList.add('hidden');
+            feedbackScreen.classList.add('hidden');
+            trainingScreen.classList.remove('hidden');
+            currentScenarioIndex = 0; // 항상 첫번째 시나리오로 시작
+            loadScenario(currentScenarioIndex);
+        }
+
+        function loadScenario(index) {
+            const scenario = scenarios[index];
+            if (!scenario) return;
+
+            userChoices = {};
+            selectedSpanId = null;
+            document.getElementById('edit-area').classList.add('hidden');
+
+            document.getElementById('scenario-title').textContent = scenario.title;
+            document.getElementById('scenario-instruction').textContent = scenario.instruction;
+            
+            let processedText = scenario.fullText;
+            const sortedProblems = [...scenario.problems].sort((a, b) => b.textToWrap.length - a.textToWrap.length);
+
+            sortedProblems.forEach(prob => {
+                const problemIndex = scenario.problems.indexOf(prob);
+                const spanId = `problem-${index}-${problemIndex}`;
+                if (!processedText.includes(`id="${spanId}"`)) {
+                    processedText = processedText.replace(
+                        prob.textToWrap,
+                        `<span id="${spanId}" class="problem-span p-1" data-problem-index="${problemIndex}">${prob.textToWrap}</span>`
+                    );
+                }
+            });
+            document.getElementById('ai-text-content').innerHTML = processedText;
+            showDefaultInteraction();
+        }
+
+        function handleSpanClick(e) {
+            const target = e.target;
+            if (target.classList.contains('problem-span')) {
+                document.querySelectorAll('.problem-span.selected').forEach(el => el.classList.remove('selected'));
+                target.classList.add('selected');
+                selectedSpanId = target.id;
+                const problemIndex = target.dataset.problemIndex;
+                const problem = scenarios[currentScenarioIndex].problems[problemIndex];
+                showInteractionContent(problem);
+            }
+        }
+        
+        function showDefaultInteraction() {
+            document.getElementById('interaction-default').classList.remove('hidden');
+            document.getElementById('interaction-content').classList.add('hidden');
+        }
+
+        function showInteractionContent(problem) {
+            document.getElementById('interaction-default').classList.add('hidden');
+            document.getElementById('interaction-content').classList.remove('hidden');
+            document.getElementById('criteria-box').innerHTML = problem.criteria;
+            document.getElementById('edit-area').classList.add('hidden');
+        }
+        
+        function handleEdit() {
+            if (!selectedSpanId) return;
+            const editArea = document.getElementById('edit-area');
+            const textarea = document.getElementById('edit-textarea');
+            const originalText = document.getElementById(selectedSpanId).textContent;
+            textarea.value = userChoices[selectedSpanId]?.editedText || originalText;
+            editArea.classList.remove('hidden');
+        }
+
+        function handleKeep() {
+            if (!selectedSpanId) return;
+            userChoices[selectedSpanId] = { decision: 'keep' };
+            const dialogBox = document.createElement('div');
+            dialogBox.textContent = '유지하기로 선택했습니다.';
+            dialogBox.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-xl text-center z-50';
+            document.body.appendChild(dialogBox);
+            setTimeout(() => {
+                dialogBox.remove();
+            }, 1500);
+
+            document.getElementById(selectedSpanId).style.backgroundColor = '#dcfce7'; // green-100
+            resetInteraction();
+        }
+
+        function handleSaveEdit() {
+            if (!selectedSpanId) return;
+            const newText = document.getElementById('edit-textarea').value;
+            userChoices[selectedSpanId] = {
+                decision: 'edit',
+                editedText: newText,
+                originalText: document.getElementById(selectedSpanId).textContent
+            };
+            document.getElementById(selectedSpanId).style.backgroundColor = '#fef9c3'; // yellow-100
+
+            const dialogBox = document.createElement('div');
+            dialogBox.textContent = '수정 내용이 저장되었습니다.';
+            dialogBox.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-500 text-white px-6 py-3 rounded-lg shadow-xl text-center z-50';
+            document.body.appendChild(dialogBox);
+            setTimeout(() => {
+                dialogBox.remove();
+            }, 1500);
+
+            resetInteraction();
+        }
+
+        function resetInteraction() {
+            document.getElementById('edit-area').classList.add('hidden');
+            showDefaultInteraction();
+            if (selectedSpanId) {
+                document.getElementById(selectedSpanId)?.classList.remove('selected');
+                selectedSpanId = null;
+            }
+        }
+        
+        function showFeedback() {
+            trainingScreen.classList.add('hidden');
+            feedbackScreen.classList.remove('hidden');
+            
+            const scenario = scenarios[currentScenarioIndex];
+            let feedbackText = scenario.fullText;
+            let summaryHtml = '<ul class="space-y-4">';
+            let correctCount = 0;
+            
+            scenario.problems.forEach((prob, i) => {
+                const spanId = `problem-${currentScenarioIndex}-${i}`;
+                const choice = userChoices[spanId];
+                let replacementText = prob.textToWrap;
+                let isCorrect = false;
+
+                if (choice) {
+                    if (choice.decision === 'edit' && prob.isCritical) {
+                        replacementText = `<span class="feedback-correct p-1 rounded font-bold" title="수정됨: ${choice.editedText}">${choice.editedText}</span>`;
+                        summaryHtml += `<li class="flex items-start"><span class="text-green-500 mr-2">✔️</span><div><strong>'${prob.textToWrap}'</strong> 부분을 잘 수정했습니다. ${prob.explanation}</div></li>`;
+                        isCorrect = true;
+                    } else if (choice.decision === 'keep' && !prob.isCritical) {
+                        replacementText = `<span class="feedback-correct p-1 rounded">${prob.textToWrap}</span>`;
+                        summaryHtml += `<li class="flex items-start"><span class="text-green-500 mr-2">✔️</span><div><strong>'${prob.textToWrap}'</strong> 부분을 유지한 판단이 좋습니다. ${prob.explanation}</div></li>`;
+                        isCorrect = true;
+                    } else {
+                        replacementText = `<span class="feedback-incorrect p-1 rounded font-bold">${choice.originalText || prob.textToWrap}</span>`;
+                        const reason = choice.decision === 'keep' ? '수정이 필요한 부분이었지만 유지했습니다.' : '수정할 필요가 없는 부분이었습니다.';
+                        summaryHtml += `<li class="flex items-start"><span class="text-red-500 mr-2">❌</span><div><strong>'${prob.textToWrap}'</strong> 부분에 대한 판단이 아쉬워요. ${reason} ${prob.explanation}</div></li>`;
+                    }
+                } else {
+                    if (prob.isCritical) {
+                        replacementText = `<span class="feedback-missed p-1 rounded">${prob.textToWrap}</span>`;
+                        summaryHtml += `<li class="flex items-start"><span class="text-orange-500 mr-2">⚠️</span><div><strong>'${prob.textToWrap}'</strong> 부분은 수정이 필요한 부분이었지만 놓쳤습니다. ${prob.explanation}</div></li>`;
+                    } else {
+                         summaryHtml += `<li class="flex items-start"><span class="text-gray-500 mr-2">ℹ️</span><div><strong>'${prob.textToWrap}'</strong> 부분도 검토해볼 수 있었어요. ${prob.explanation}</div></li>`;
+                         isCorrect = true;
+                    }
+                }
+                
+                if (isCorrect) correctCount++;
+                feedbackText = feedbackText.replace(prob.textToWrap, replacementText);
+            });
+
+            summaryHtml += '</ul>';
+            const score = scenario.problems.length > 0 ? Math.round((correctCount / scenario.problems.length) * 100) : 100;
+            summaryHtml = `<p class="mb-4 text-center font-bold text-xl">총 ${scenario.problems.length}개 중 ${correctCount}개를 올바르게 판단했습니다! (점수: ${score}점)</p>` + summaryHtml;
+
+            document.getElementById('feedback-text-content').innerHTML = feedbackText;
+            document.getElementById('feedback-summary').innerHTML = summaryHtml;
+            
+            const nextBtn = document.getElementById('next-btn');
+            if (currentScenarioIndex < scenarios.length - 1) {
+                nextBtn.textContent = '다음 훈련으로';
+            } else {
+                nextBtn.textContent = '첫 화면으로';
+            }
+        }
+
+        // Event Listeners
+        startBtn.addEventListener('click', initializeTraining);
+
+        document.getElementById('ai-text-content').addEventListener('click', handleSpanClick);
+        document.getElementById('edit-btn').addEventListener('click', handleEdit);
+        document.getElementById('keep-btn').addEventListener('click', handleKeep);
+        document.getElementById('save-edit-btn').addEventListener('click', handleSaveEdit);
+        document.getElementById('submit-btn').addEventListener('click', showFeedback);
+        
+        document.getElementById('retry-btn').addEventListener('click', () => {
+            feedbackScreen.classList.add('hidden');
+            trainingScreen.classList.remove('hidden');
+            loadScenario(currentScenarioIndex);
+        });
+
+        document.getElementById('next-btn').addEventListener('click', () => {
+            feedbackScreen.classList.add('hidden');
+            if (currentScenarioIndex < scenarios.length - 1) {
+                currentScenarioIndex++;
+                trainingScreen.classList.remove('hidden');
+                loadScenario(currentScenarioIndex);
+            } else {
+                introScreen.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
