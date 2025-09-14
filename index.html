@@ -62,8 +62,8 @@
         <!-- Main Content -->
         <div id="app" class="container mx-auto p-4 md:p-8 max-w-6xl">
             <header class="text-center mb-8">
-                <h1 class="text-3xl md:text-4xl font-bold text-blue-600">책임있는 AI 활용 훈련소 🚀</h1>
-                <p class="mt-2 text-lg text-gray-600">AI가 생성한 글을 비판적으로 검토하고 수정하는 방법을 연습해봅시다.</p>
+                <h1 class="text-3xl md:text-4xl font-bold text-blue-600">소원을 말해봐! ✨🧞‍♂️ <br>책임 있는 AI 활용 훈련소 🕌</h1>
+                <p class="mt-2 text-md text-gray-700 font-semibold text-center">AI는 내 소원을 대신 이뤄주는 도구가 아니라, 내가 책임 있게 사용해야 하는 친구다.</p>
             </header>
 
             <main id="main-content" class="bg-white p-6 rounded-xl shadow-lg">
@@ -71,6 +71,9 @@
                     <h2 class="text-2xl font-semibold mb-4 text-center">훈련 모드 선택</h2>
                     <p class="text-center mb-8 text-gray-500">원하는 훈련 모드를 선택하여 AI 활용 능력을 키워보세요.</p>
                     <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-8">
+                        <button id="mbti-test-btn" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-4 px-8 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                            디지털 윤리 MBTI 진단
+                        </button>
                         <button id="digital-ethics-btn" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 px-8 rounded-lg shadow-md transition-transform transform hover:scale-105">
                             디지털 윤리 훈련
                         </button>
@@ -175,9 +178,15 @@
                     </div>
 
                     <div id="game-mission" class="hidden">
-                        <div class="flex justify-between items-center w-full px-4 mb-4">
+                        <div class="flex flex-col md:flex-row justify-between items-center w-full px-4 mb-4">
                             <div class="font-bold text-lg">미션 <span id="mission-number"></span> / 5</div>
                             <div class="font-bold text-lg">점수: <span id="game-score">0</span></div>
+                        </div>
+                        <div id="game-inventory" class="p-4 bg-yellow-100 rounded-lg shadow-inner mb-4 text-center text-sm">
+                            <h4 class="font-bold text-yellow-800 mb-2">획득한 보물 💎</h4>
+                            <div id="item-list" class="flex flex-wrap justify-center space-x-2">
+                                <!-- Items will be displayed here -->
+                            </div>
                         </div>
                         <div id="game-scenario" class="p-6 game-panel flex flex-col items-center justify-center text-center">
                             <h3 id="mission-title" class="text-xl md:text-2xl font-bold mb-4"></h3>
@@ -194,6 +203,40 @@
                                 다음 미션으로
                             </button>
                         </div>
+                    </div>
+                </div>
+
+                <div id="mbti-screen" class="hidden">
+                    <h2 class="text-2xl font-bold text-center mb-6 text-pink-600">✨ 디지털 윤리 MBTI 진단</h2>
+                    <div id="mbti-intro" class="p-6 bg-pink-50 rounded-lg text-gray-700 mb-8 text-center">
+                        <h3 class="font-bold text-xl mb-4 text-pink-800">나의 디지털 윤리 습관은?</h3>
+                        <p class="text-lg">간단한 질문에 답하고, 나의 디지털 윤리 유형을 알아보세요.</p>
+                        <button id="mbti-start-btn" class="mt-6 bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                            MBTI 진단 시작
+                        </button>
+                    </div>
+
+                    <div id="mbti-quiz" class="hidden p-6 bg-white rounded-lg shadow-lg">
+                        <div class="text-center mb-6">
+                            <span class="text-lg text-gray-500">문제 <span id="mbti-current-q">1</span> / <span id="mbti-total-q">20</span></span>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                                <div id="mbti-progress-bar" class="bg-pink-400 h-2.5 rounded-full" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <h3 id="mbti-question" class="text-xl md:text-2xl font-semibold mb-8 text-center text-gray-800"></h3>
+                        <div id="mbti-choices" class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8 justify-center">
+                            <button class="w-full md:w-auto bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-transform transform hover:scale-105 mbti-choice-btn" data-value="yes">그렇다</button>
+                            <button class="w-full md:w-auto bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-transform transform hover:scale-105 mbti-choice-btn" data-value="no">아니다</button>
+                        </div>
+                    </div>
+
+                    <div id="mbti-result" class="hidden text-center p-8 bg-white rounded-lg shadow-lg">
+                        <h3 id="mbti-result-title" class="text-2xl md:text-3xl font-bold mb-4 text-pink-600"></h3>
+                        <div id="mbti-result-description" class="p-4 bg-pink-50 rounded-lg text-pink-800 mb-6"></div>
+                        <p id="mbti-result-summary" class="text-lg text-gray-700 mb-8"></p>
+                        <button id="mbti-home-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                            첫 화면으로
+                        </button>
                     </div>
                 </div>
 
@@ -307,7 +350,7 @@
                 title: "시나리오 2: 딥페이크에 대한 글",
                 instruction: "AI가 작성한 딥페이크 기술에 대한 설명을 읽고, 편향되거나 위험할 수 있는 부분을 찾아 수정해보세요.",
                 fullText: "딥페이크는 인공지능을 이용해 영상이나 이미지를 합성하는 기술입니다. 이 기술은 주로 유명인의 얼굴을 합성하여 재미있는 영상을 만드는 데 사용됩니다. 딥페이크 기술 자체는 문제가 없으며, 사용하는 사람에 따라 결과가 달라질 뿐입니다. 누구나 쉽게 만들 수 있어서 새로운 놀이 문화가 되고 있습니다.",
-                 problems: [
+                problems: [
                     {
                         textToWrap: "주로 유명인의 얼굴을 합성하여 재미있는 영상을 만드는 데 사용됩니다.",
                         problemType: "bias",
@@ -520,7 +563,7 @@
                 situation: "AI가 유명한 작가의 그림을 흉내 내서 비슷한 그림을 만들었어요. 이 그림을 마치 내가 그린 것처럼 친구들에게 자랑할까요?",
                 choices: [
                     { text: "내 작품이라고 속이기", correct: false, feedback: "틀렸어요. AI가 참고한 원작자의 노력과 권리를 존중하지 않는 태도입니다. AI 결과물은 다른 사람의 데이터와 노력으로 만들어진 것임을 잊지 마세요.", rationale: "AI도 다른 사람의 노력을 기반으로 만들어진 것이므로, 원작자를 존중하는 태도가 필요합니다. 이는 건강한 디지털 생태계를 만드는 첫걸음입니다." },
-                    { text: "원작자를 언급하며 존중하기", correct: true, feedback: "정답! AI도 다른 사람의 노력을 기반으로 만들어진 것이므로, 원작자를 존중하는 태도가 필요합니다. 이는 건강한 디지털 생태계를 만드는 첫걸음입니다.", rationale: "AI도 다른 사람의 노력을 기반으로 만들어진 것이므로, 원작자를 존중하는 태도가 필요합니다. 이는 건강한 디지털 생태계를 만드는 첫걸음입니다." }
+                    { text: "원작자를 언급하며 존중하기", correct: true, feedback: "정답! AI도 다른 사람의 노력을 기반으로 만들어진 것이므로, 원작자를 존중하는 태도가 필요합니다. 이는 건강한 디지털 생태계를 만드는 첫걸음입니다." },
                 ]
             },
             {
@@ -533,6 +576,77 @@
                 ]
             }
         ];
+        
+        // MBTI 질문 데이터
+        const mbtiQuestionData = [
+            {
+                axis: "V",
+                label: "정보 확인",
+                questions: [
+                    { q: "AI가 말해준 답은 일단 믿고 보는 편인가요?", isEthical: false },
+                    { q: "친구가 보내준 재미있는 영상을 사실인지 확인하지 않고 보나요?", isEthical: false },
+                    { q: "모르는 단어가 나오면 AI 말만 믿고 넘어가나요?", isEthical: false },
+                    { q: "AI가 추천한 내용을 꼭 책이나 선생님께 확인하나요?", isEthical: true },
+                    { q: "인터넷에서 본 기사를 다른 자료와 비교해 보나요?", isEthical: true }
+                ]
+            },
+            {
+                axis: "R",
+                label: "표현 방식",
+                questions: [
+                    { q: "온라인에서 기분 나쁘면 바로 화난 말을 쓰나요?", isEthical: false },
+                    { q: "댓글을 쓸 때 친구가 상처받을까 먼저 생각하나요?", isEthical: true },
+                    { q: "농담이라도 욕설을 쓰면 재미있다고 생각하나요?", isEthical: false },
+                    { q: "AI에게 질문할 때도 존중하는 말을 쓰나요?", isEthical: true },
+                    { q: "다른 사람의 의견이 마음에 안 들어도 예의 있게 말하나요?", isEthical: true }
+                ]
+            },
+            {
+                axis: "H",
+                label: "사용 태도",
+                questions: [
+                    { q: "숙제가 어려우면 AI에게 대신 해달라고 하나요?", isEthical: false },
+                    { q: "AI가 만든 글을 그대로 제출해도 괜찮다고 생각하나요?", isEthical: false },
+                    { q: "AI에게 도움을 받더라도 내 생각을 꼭 덧붙이나요?", isEthical: true },
+                    { q: "틀린 답을 AI가 줬을 때, 그냥 그대로 쓰나요?", isEthical: false },
+                    { q: "AI 결과물을 참고만 하고 마지막에는 내가 책임지나요?", isEthical: true }
+                ]
+            },
+            {
+                axis: "T",
+                label: "공유 습관",
+                questions: [
+                    { q: "재밌는 영상을 받으면 사실 여부와 상관없이 친구들에게 바로 보낸다?", isEthical: false },
+                    { q: "공유하기 전에 이 영상이 누군가를 놀리는 건 아닌지 생각하나요?", isEthical: true },
+                    { q: "“빨리 퍼뜨려야 해!”라는 마음으로 먼저 공유하나요?", isEthical: false },
+                    { q: "가짜 뉴스일 수도 있다는 생각이 들면 공유하지 않나요?", isEthical: true },
+                    { q: "다른 사람에게 피해가 될 만한 내용이면 멈추고 신고하나요?", isEthical: true }
+                ]
+            }
+        ];
+        
+        // MBTI 결과 유형 (16가지)
+        const mbtiResults = {
+            "VDRT": { title: "똑똑하지만 편법형", description: "확인·존중은 잘하지만 정직하지는 못함", summary: "정보의 진위를 파악하는 능력과 타인을 존중하는 마음은 훌륭해요. 하지만 때때로 쉬운 길을 찾으려는 유혹에 빠질 수 있어요. 정직한 사용 습관을 기르면 더욱 신뢰받는 디지털 시민이 될 수 있습니다." },
+            "VEHS": { title: "똑똑한 장난꾸러기", description: "똑똑하지만 공유할 때는 막 함", summary: "높은 비판적 사고력을 가졌지만, 흥미 위주로 콘텐츠를 공유하는 경향이 있어요. 정보의 영향력을 고려하고, 공유 전에 한 번 더 생각하는 습관을 들이면 좋습니다." },
+            "VERH": { title: "스마트 탐정형", description: "정보를 확인하고, 존중하며, 정직하고, 생각하고 공유하는 모범형", summary: "디지털 세상의 모범생! 🕵️‍♂️ 정보를 꼼꼼히 확인하고, 정직하며, 타인을 존중합니다. 현명한 판단으로 건강한 디지털 환경을 만드는 데 크게 기여합니다." },
+            "VETS": { title: "정의로운 방송인형", description: "사실은 확인하지만 공유 욕심이 많음", summary: "정확한 정보를 전달하려는 의지는 강하지만, 정보의 확산 속도에 집착할 수 있습니다. 공유의 파급력을 이해하고, 신중하게 정보를 나누는 연습이 필요해요." },
+            "VDHT": { title: "꼼꼼하지만 편한 길형", description: "확인은 잘하지만 숙제는 시켜서 함", summary: "사실 확인 능력은 뛰어나지만, 정직한 사용 습관이 부족합니다. AI를 활용할 때도 스스로의 생각과 노력을 더하는 태도를 기르면 좋습니다." },
+            "CRHS": { title: "착한 마음 무심형", description: "존중은 하지만 확인·책임·공유는 부족", summary: "타인을 존중하는 따뜻한 마음을 가졌지만, 정보의 진위나 공유의 책임에 대해서는 무심한 경향이 있어요. 정보를 접할 때 비판적인 태도를 갖도록 노력해보세요." },
+            "CRDT": { title: "무심한 방관형", description: "존중은 하지만, 확인과 책임감이 부족", summary: "의도는 좋지만, 디지털 활동에 대한 깊은 고민은 부족해요. 가짜 정보에 쉽게 노출될 수 있어 주의가 필요합니다. 정보 확인 습관을 기르는 것부터 시작해 보세요." },
+            "CERH": { title: "말썽꾸러기형", description: "존중하지 않고 대신 시키지만, 가끔 정직하려고 애씀", summary: "감정을 앞세우고 책임감이 부족하지만, 때때로 올바른 행동을 하려는 양심이 있습니다. 자신의 행동이 타인에게 어떤 영향을 미칠지 먼저 고민하는 습관을 들이세요." },
+            "CERS": { title: "감정 폭풍형", description: "감정과 즉흥성이 강해서 디지털 세상에 혼란을 줌", summary: "감정을 그대로 드러내는 경향이 강해 온라인에서 충동적인 행동을 할 수 있습니다. 한 발 물러서서 생각하고, 감정을 조절하는 연습이 필요합니다." },
+            "CRHS🌱": { title: "성장 중인 시민형", description: "존중은 있지만 아직 훈련 필요", summary: "디지털 시민으로서의 기본적인 태도는 갖췄지만, 좀 더 적극적인 윤리 실천이 필요해요. 꾸준한 관심과 노력이 좋은 습관을 만들어 줄 겁니다." },
+            "VERH🏅": { title: "디지털 시민 영웅", description: "거의 완벽한 디지털 윤리 지킴이", summary: "최고 모범형🏅 당신의 모범적인 태도는 다른 사람들에게 큰 귀감이 될 거예요!" },
+            "CEDS🚨": { title: "디지털 위험 탐험가", description: "모든 선택이 비윤리적", summary: "경고🚨 당신의 디지털 습관은 매우 위험합니다. 온라인에서 가짜 정보에 쉽게 속고, 타인에게 피해를 줄 수 있어요. 지금 당장 훈련이 필요합니다." },
+        };
+        
+        // 보정 기준에 따른 최종 성향
+        const overallResults = {
+            "low": { title: "🚨 디지털 위험 탐험형", summary: "디지털 윤리 태도가 전반적으로 부족하여 위험에 노출될 가능성이 높습니다. 기초부터 차근차근 훈련하는 것이 시급해요." },
+            "mid": { title: "🌱 디지털 시민 성장형", summary: "좋은 디지털 습관을 기르고 있는 중입니다. 조금만 더 노력하면 더 나은 디지털 시민이 될 수 있어요!" },
+            "high": { title: "🌟 디지털 윤리 지킴이형", summary: "모범적인 디지털 윤리 태도를 지녔습니다. 당신은 디지털 세상의 든든한 수호자예요! 칭찬합니다." }
+        };
 
         let currentScenarioIndex = 0;
         let currentScenarios = [];
@@ -540,7 +654,17 @@
         let selectedSpanId = null;
         let gameMissionIndex = 0;
         let gameScore = 0;
-
+        let collectedItems = []; // Add new global variable for collected items
+        const gameItems = [
+            "✨ 지혜의 별",
+            "💡 책임감의 전구",
+            "🧭 정직의 나침반",
+            "🛡️ 존중의 방패",
+            "🔍 비판적 사고의 돋보기"
+        ];
+        let mbtiScores = { V: 0, R: 0, H: 0, T: 0 }; // V, R, H, T 점수만 기록
+        let mbtiQuestionIndex = 0;
+        
         // DOM Elements
         const app = document.getElementById('app');
         const modeSelectionScreen = document.getElementById('mode-selection-screen');
@@ -548,9 +672,11 @@
         const trainingScreen = document.getElementById('training-screen');
         const feedbackScreen = document.getElementById('feedback-screen');
         const gameScreen = document.getElementById('game-screen');
+        const mbtiScreen = document.getElementById('mbti-screen');
         const digitalEthicsBtn = document.getElementById('digital-ethics-btn');
         const promptWritingBtn = document.getElementById('prompt-writing-btn');
         const gameBtn = document.getElementById('game-btn');
+        const mbtiTestBtn = document.getElementById('mbti-test-btn');
         const startBtn = document.getElementById('start-btn');
         const factCheckBtn = document.getElementById('fact-check-btn');
         const sidebarTitle = document.getElementById('sidebar-title');
@@ -568,6 +694,19 @@
         const homeBtn = document.getElementById('home-btn');
         const gameScoreEl = document.getElementById('game-score');
         const missionNumberEl = document.getElementById('mission-number');
+        const mbtiStartBtn = document.getElementById('mbti-start-btn');
+        const mbtiIntroEl = document.getElementById('mbti-intro');
+        const mbtiQuizEl = document.getElementById('mbti-quiz');
+        const mbtiQuestionEl = document.getElementById('mbti-question');
+        const mbtiChoicesEl = document.getElementById('mbti-choices');
+        const mbtiResultEl = document.getElementById('mbti-result');
+        const mbtiResultTitleEl = document.getElementById('mbti-result-title');
+        const mbtiResultDescEl = document.getElementById('mbti-result-description');
+        const mbtiResultSummaryEl = document.getElementById('mbti-result-summary');
+        const mbtiCurrentQEl = document.getElementById('mbti-current-q');
+        const mbtiTotalQEl = document.getElementById('mbti-total-q');
+        const mbtiProgressBarEl = document.getElementById('mbti-progress-bar');
+        const mbtiHomeBtn = document.getElementById('mbti-home-btn');
 
 
         let currentMode = '';
@@ -579,6 +718,7 @@
             introScreen.classList.remove('hidden');
             trainingScreen.classList.add('hidden');
             gameScreen.classList.add('hidden');
+            mbtiScreen.classList.add('hidden');
             document.getElementById('ethics-section').classList.remove('hidden');
             document.getElementById('prompt-section').classList.add('hidden');
             document.getElementById('training-guide').classList.remove('hidden');
@@ -592,6 +732,7 @@
             introScreen.classList.remove('hidden');
             trainingScreen.classList.add('hidden');
             gameScreen.classList.add('hidden');
+            mbtiScreen.classList.add('hidden');
             document.getElementById('ethics-section').classList.add('hidden');
             document.getElementById('prompt-section').classList.remove('hidden');
             document.getElementById('training-guide').classList.remove('hidden');
@@ -602,19 +743,154 @@
             currentMode = 'game';
             gameMissionIndex = 0;
             gameScore = 0;
+            collectedItems = []; // Reset collected items
             modeSelectionScreen.classList.add('hidden');
             introScreen.classList.add('hidden');
             trainingScreen.classList.add('hidden');
             gameScreen.classList.remove('hidden');
+            mbtiScreen.classList.add('hidden');
             gameIntroEl.classList.remove('hidden');
             gameMissionEl.classList.add('hidden');
             gameFeedbackEl.classList.add('hidden');
             updateSidebarForMode();
         });
 
+        mbtiTestBtn.addEventListener('click', () => {
+            currentMode = 'mbti';
+            modeSelectionScreen.classList.add('hidden');
+            introScreen.classList.add('hidden');
+            trainingScreen.classList.add('hidden');
+            gameScreen.classList.add('hidden');
+            mbtiScreen.classList.remove('hidden');
+            mbtiIntroEl.classList.remove('hidden');
+            mbtiQuizEl.classList.add('hidden');
+            mbtiResultEl.classList.add('hidden');
+            updateSidebarForMode();
+        });
+
+        mbtiStartBtn.addEventListener('click', () => {
+            mbtiIntroEl.classList.add('hidden');
+            mbtiQuizEl.classList.remove('hidden');
+            mbtiScores = { V: 0, R: 0, H: 0, T: 0 };
+            mbtiQuestionIndex = 0;
+            mbtiTotalQEl.textContent = mbtiQuestionData.flatMap(axis => axis.questions).length;
+            loadMbtiQuestion();
+            updateSidebar(1);
+        });
+
+        mbtiHomeBtn.addEventListener('click', () => {
+            mbtiScreen.classList.add('hidden');
+            modeSelectionScreen.classList.remove('hidden');
+            updateSidebarForMode();
+        });
+
+        function loadMbtiQuestion() {
+            const allQuestions = mbtiQuestionData.flatMap(axis => axis.questions);
+            const currentQ = allQuestions[mbtiQuestionIndex];
+            mbtiCurrentQEl.textContent = mbtiQuestionIndex + 1;
+            mbtiQuestionEl.textContent = currentQ.q;
+            
+            const progress = (mbtiQuestionIndex / allQuestions.length) * 100;
+            mbtiProgressBarEl.style.width = `${progress}%`;
+        }
+        
+        function handleMbtiChoice(isYes) {
+            const allQuestions = mbtiQuestionData.flatMap(axis => axis.questions);
+            const currentAxis = mbtiQuestionData.find(axis => axis.questions.includes(allQuestions[mbtiQuestionIndex]));
+            const currentQ = allQuestions[mbtiQuestionIndex];
+            
+            // 윤리적 선택이면 점수 추가
+            if ((isYes && currentQ.isEthical) || (!isYes && !currentQ.isEthical)) {
+                mbtiScores[currentAxis.axis]++;
+            }
+            
+            mbtiQuestionIndex++;
+
+            if (mbtiQuestionIndex < allQuestions.length) {
+                loadMbtiQuestion();
+            } else {
+                mbtiProgressBarEl.style.width = '100%';
+                calculateMbtiResult();
+            }
+        }
+        
+        // MBTI 선택 버튼 이벤트 리스너 (그렇다/아니다)
+        document.querySelectorAll('.mbti-choice-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const isYes = e.target.dataset.value === 'yes';
+                handleMbtiChoice(isYes);
+            });
+        });
+
+        function calculateMbtiResult() {
+            let finalType = "";
+            let finalResult = {};
+            const totalScore = mbtiScores.V + mbtiScores.R + mbtiScores.H + mbtiScores.T;
+
+            if (totalScore <= 7) {
+                finalResult = overallResults.low;
+            } else if (totalScore >= 15) {
+                finalResult = overallResults.high;
+            } else {
+                finalResult = overallResults.mid;
+            }
+
+            // 각 축의 점수를 기준으로 최종 4자리 코드 생성
+            const vType = mbtiScores.V >= 3 ? 'V' : 'C';
+            const rType = mbtiScores.R >= 3 ? 'R' : 'E';
+            const hType = mbtiScores.H >= 3 ? 'H' : 'D';
+            const tType = mbtiScores.T >= 3 ? 'T' : 'S';
+            
+            finalType = vType + rType + hType + tType;
+
+            // 최종 유형 조합
+            let specificResult = mbtiResults[finalType];
+            if (!specificResult) {
+                specificResult = {
+                    title: "알 수 없는 유형",
+                    description: "아직 정의되지 않은 조합입니다.",
+                    summary: "선택하신 조합에 대한 정보가 부족합니다."
+                }
+            }
+
+            // 총점에 따른 보정 기준으로 최종 결과 확정
+            if (totalScore <= 7) { // 0~7점
+                finalResult.description = specificResult.description;
+                finalResult.summary = specificResult.summary;
+                if (finalType === 'CEDS') {
+                    finalResult.title = mbtiResults['CEDS🚨'].title;
+                    finalResult.description = mbtiResults['CEDS🚨'].description;
+                    finalResult.summary = mbtiResults['CEDS🚨'].summary;
+                }
+            } else if (totalScore >= 15) { // 15~20점
+                finalResult.description = specificResult.description;
+                finalResult.summary = specificResult.summary;
+                if (finalType === 'VRHT') {
+                    finalResult.title = mbtiResults['VERH🏅'].title;
+                    finalResult.description = mbtiResults['VERH🏅'].description;
+                    finalResult.summary = mbtiResults['VERH🏅'].summary;
+                }
+            } else { // 8~14점
+                finalResult.description = specificResult.description;
+                finalResult.summary = specificResult.summary;
+            }
+
+            showMbtiResult(finalResult, finalType);
+            updateSidebar(2);
+        }
+
+        function showMbtiResult(result, type) {
+            mbtiQuizEl.classList.add('hidden');
+            mbtiResultEl.classList.remove('hidden');
+            mbtiResultTitleEl.textContent = `${result.title} (${type}형)`;
+            mbtiResultDescEl.innerHTML = result.description;
+            mbtiResultSummaryEl.textContent = result.summary;
+        }
+
         gameStartBtn.addEventListener('click', () => {
             gameIntroEl.classList.add('hidden');
             gameMissionEl.classList.remove('hidden');
+            document.getElementById('item-list').innerHTML = ''; // Clear items on new game start
             loadGameMission(gameMissionIndex);
         });
 
@@ -628,7 +904,8 @@
                 // Game End
                 gameFeedbackEl.classList.add('hidden');
                 gameIntroEl.classList.remove('hidden');
-                alert(`축하합니다! 모든 미션을 완료하고 'AI 윤리의 수호자' 칭호를 얻었습니다! 총점: ${gameScore}점`);
+                const itemsText = collectedItems.length > 0 ? `\n\n획득한 보물: ${collectedItems.join(', ')}` : '';
+                alert(`축하합니다! 모든 미션을 완료하고 'AI 윤리의 수호자' 칭호를 얻었습니다! 총점: ${gameScore}점${itemsText}`);
                 modeSelectionScreen.classList.remove('hidden');
                 gameScreen.classList.add('hidden');
                 updateSidebarForMode();
@@ -659,9 +936,31 @@
                 feedbackTitleEl.textContent = "미션 성공! 🎉";
                 feedbackTitleEl.classList.remove('text-red-600');
                 feedbackTitleEl.classList.add('text-green-600');
-                feedback = choice.feedback;
                 gameScore += 20; // Correct answer gives 20 points
                 gameScoreEl.textContent = gameScore;
+
+                // Give an item!
+                const item = gameItems[mission.id]; // Use mission ID to get a unique item
+                if (item) {
+                    collectedItems.push(item);
+                    const itemEl = document.createElement('span');
+                    itemEl.textContent = item;
+                    itemEl.className = 'bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold';
+                    document.getElementById('item-list').appendChild(itemEl);
+
+                    feedback = `
+                        <p class="mb-4 text-green-600 font-bold">${choice.feedback}</p>
+                        <p class="mb-2 font-bold text-green-600">🎉 새로운 보물 획득! 🎉</p>
+                        <p class="text-xl font-bold mb-4 text-yellow-600">${item}</p>
+                        <p>${choice.rationale}</p>
+                    `;
+                } else {
+                    feedback = `
+                        <p class="mb-4 text-green-600 font-bold">${choice.feedback}</p>
+                        <p>${choice.rationale}</p>
+                    `;
+                }
+
             } else {
                 feedbackTitleEl.textContent = "미션 실패... 😢";
                 feedbackTitleEl.classList.remove('text-green-600');
@@ -716,20 +1015,37 @@
             } else if (currentMode === 'game') {
                  sidebarTitle.textContent = 'AI 윤리 모험 순서';
                  sidebarList.innerHTML = `
+                     <li id="sidebar-step-0" class="flex items-center space-x-3 p-3 rounded-lg transition-all duration-300 transform hover:scale-105">
+                         <div class="w-8 h-8 flex items-center justify-center bg-blue-500 rounded-full text-white font-bold text-lg">①</div>
+                         <span class="font-semibold">게임 시작</span>
+                     </li>
+                     <li id="sidebar-step-1" class="flex items-center space-x-3 p-3 rounded-lg transition-all duration-300">
+                         <div class="w-8 h-8 flex items-center justify-center bg-gray-300 rounded-full text-gray-600 font-bold text-lg">②</div>
+                         <span class="font-semibold">미션 해결</span>
+                     </li>
+                     <li id="sidebar-step-2" class="flex items-center space-x-3 p-3 rounded-lg transition-all duration-300">
+                         <div class="w-8 h-8 flex items-center justify-center bg-gray-300 rounded-full text-gray-600 font-bold text-lg">③</div>
+                         <span class="font-semibold">결과 확인</span>
+                     </li>
+                 `;
+                 updateSidebar(0);
+            } else if (currentMode === 'mbti') {
+                sidebarTitle.textContent = '디지털 윤리 MBTI';
+                sidebarList.innerHTML = `
                     <li id="sidebar-step-0" class="flex items-center space-x-3 p-3 rounded-lg transition-all duration-300 transform hover:scale-105">
                         <div class="w-8 h-8 flex items-center justify-center bg-blue-500 rounded-full text-white font-bold text-lg">①</div>
-                        <span class="font-semibold">게임 시작</span>
+                        <span class="font-semibold">진단 시작</span>
                     </li>
                     <li id="sidebar-step-1" class="flex items-center space-x-3 p-3 rounded-lg transition-all duration-300">
                         <div class="w-8 h-8 flex items-center justify-center bg-gray-300 rounded-full text-gray-600 font-bold text-lg">②</div>
-                        <span class="font-semibold">미션 해결</span>
+                        <span class="font-semibold">문제 풀기</span>
                     </li>
                     <li id="sidebar-step-2" class="flex items-center space-x-3 p-3 rounded-lg transition-all duration-300">
                         <div class="w-8 h-8 flex items-center justify-center bg-gray-300 rounded-full text-gray-600 font-bold text-lg">③</div>
                         <span class="font-semibold">결과 확인</span>
                     </li>
-                 `;
-                 updateSidebar(0);
+                `;
+                updateSidebar(0);
             }
         }
 
@@ -1037,3 +1353,4 @@
     </script>
 </body>
 </html>
+
